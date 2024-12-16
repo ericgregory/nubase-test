@@ -1,9 +1,5 @@
 #!/bin/bash
 
-# Set secrets topic and start local wasmCloud environment in detached mode
-# WASMCLOUD_SECRETS_TOPIC=wasmcloud.secrets \
-#    wash up -d
-
 # Generate encryption keys and run the backend
 export ENCRYPTION_XKEY_SEED=$(wash keys gen curve -o json | jq -r '.seed')
 export TRANSIT_XKEY_SEED=$(wash keys gen curve -o json | jq -r '.seed')
