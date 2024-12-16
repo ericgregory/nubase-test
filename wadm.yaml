@@ -1,0 +1,67 @@
+---
+apiVersion: core.oam.dev/v1beta1
+kind: Application
+metadata:
+  name: nubase
+  annotations:
+    description: |
+      NuBase - A dev-friendly database powered by Couchbase and Wasm
+spec:
+  policies:
+    - name: nats-kv
+      type: policy.secret.wasmcloud.dev/v1alpha1
+      properties:
+        backend: nats-kv
+  components:
+    - name: nubase
+      type: component
+      properties:
+        image: file://./component-nubase/build/nubase_s.wasm
+      traits:
+        # We allow our DB to scale up as needed to handle incoming load
+        - type: spreadscaler
+          properties:
+            instances: 100
+        # Link the component to the wasmcloud couchbase provider
+        - type: link
+          properties:
+            namespace: wasmcloud
+            package: couchbase
+            interfaces: [document]
+            target:
+              name: couchbase
+              secrets:
+                - name: password
+                  properties:
+                    policy: nats-kv
+                    key: couchbase_password
+              config:
+                - name: provider-config
+                  properties:
+                    connectionString: 'localhost'
+                    username: 'Administrator'
+                    bucketName: 'test'
+
+    # This proivder mediates our access to Couchbase
+    - name: couchbase
+      type: capability
+      properties:
+        image: file://.//provider-couchbase/build/wasmcloud-provider-couchbase.par.gz
+        id: couchbase
+
+    # This provider enables us to receive HTTP requests
+    - name: httpserver
+      type: capability
+      properties:
+        image: ghcr.io/wasmcloud/http-server:0.23.2
+      traits:
+        - type: link
+          properties:
+            target: nubase
+            namespace: wasi
+            package: http
+            interfaces: [incoming-handler]
+            source_config:
+              - name: default-http
+                properties:
+                  address: 127.0.0.1:8080
