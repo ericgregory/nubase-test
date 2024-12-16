@@ -46,7 +46,7 @@ spec:
     - name: couchbase
       type: capability
       properties:
-        image: file://.//provider-couchbase/build/wasmcloud-provider-couchbase.par.gz
+        image: file://./provider-couchbase/build/wasmcloud-provider-couchbase.par.gz
         id: couchbase
 
     # This provider enables us to receive HTTP requests
