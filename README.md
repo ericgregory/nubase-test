@@ -49,7 +49,9 @@ For this example, you'll need:
 
 ### Start Couchbase and wasmCloud locally
 
-Clone the [wasmcloud-contrib](https://github.com/wasmCloud/wasmCloud-contrib) repository and navigate to this directory (`nubase`). Then use the Docker Compose file in this directory to start Couchbase: 
+**Note**: These instructions are WIP.
+
+Clone this repo. Then use the Docker Compose file in this directory to start Couchbase: 
 
 ```bash
 docker-compose up -d
@@ -186,6 +188,12 @@ When you're done with the demo, you can delete the application from your local w
 ```shell
 wash app delete nubase
 ```
+You can use the [NATS CLI](https://wasmcloud.com/docs/ecosystem/nats/#using-the-nats-cli) to purge secrets from the NATS key-value stores used by the `secrets-nats-kv` backend:
+
+```shell
+nats kv del WASMCLOUD_SECRETS --force
+```
+
 To stop the wasmCloud instance:
 
 ```shell
